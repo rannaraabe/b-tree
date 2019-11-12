@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// Struct que define uma pagina
 struct Node {
 	unsigned int order;				// Ordem d da árvore
 	std::forward_list<int> data;	// Valores dos nós
@@ -36,9 +37,7 @@ class bTree
 		 * @return true caso o valor esteja na árvore, e false caso não esteja
 		 */ 
 		bool search(int key){
-			int index = 0;
-
-			return search_recursive(raiz, key, index);
+			return search_recursive(raiz, key, 0);
 		}
 
 		bool search_recursive(Node* tree, int key, int index){
@@ -60,8 +59,10 @@ class bTree
 					return search_recursive(it.operator++, key, index++);
 				else{
 					// Caso o valor seja maior do que o atual e menor do que o próximo da lista, sigo para a pagina apontada e busco o valor na lista dos filhos
-					if(key > *it && key < *it+1)
+					if(key > *it && key < *it+1){
+						index = 0;
 						return search_recursive(tree->filhos[index++], key, index);
+					}
 				}
 
 				it++;
@@ -74,12 +75,29 @@ class bTree
 		 * Insere um valor na árvore B
 		 */ 
 		void insert(int key){
-			// TODO
-			insert_recursive();
+			// Caso raiz seja vazia, não faço nada
+			if(raiz == nullptr)
+				return;
+
+			insert_recursive(raiz, key, 0);
 		}
 
-		void insert_recursive(){
-			// TODO
+		void insert_recursive(Node* tree, int key, int index){
+			// Caso o valor já esteja na árvore
+			if(search(key)){
+				cout << "erro-insert: Valor " << key << "já está na árvore!";
+				return;
+			} 
+
+			auto it = tree->data.begin();
+			while(it != tree->data.end()){
+				
+				// conferir se eh maior ou menor do q a raiz, descer pelo ponteiro
+				// andar na lista vendo se a ordem já está preenchida
+				// ai tem os casos para conferir que não lembro
+
+				it++;
+			}
 		}
 
 		/**
