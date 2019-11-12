@@ -1,66 +1,95 @@
+/**
+ * @file main.cpp
+ * @author Ranna Raabe e Douglas Lima
+ */
+
 #include <iostream>
 #include <fstream>
-#include "bTree.h"
+#include <sstream>
+#include <string>
+#include <map>
 
+#include "bTree.hpp"
 
-template<typename T>
-void buildTree(Node<T>* tree, char* path){
-	std::fstream espec;
-	espec.open(path);
-	T val;
-	espec>>val;
-	tree->key = val;
-	tree->isRoot = true;
-	while(espec>>val)
-		binTreeInsertion(tree, val);
-}
+using namespace std;
 
+// Guardando um inteiro para cada operação
+enum cod_funcoes {
+    BUSCA,
+    INSIRA,
+    REMOVA
+};
 
-template<typename T>
-void runTest(Node<T>* tree, std::string path){
+// Uso um mapa para conferir a operação e seu código
+map<string, cod_funcoes> map_funcoes;
 
-	std::fstream test;
-	test.open(path.c_str());
-	std::string fcomand;
-	while(test>>fcomand){
-		int arg;
-		T key;
-		if (fcomand == "ENESIMO"){
-			test >>arg;
-			std::cout << "Elemento " << arg << " " << nthElement(tree, arg)->key << std::endl;
-		}
-		else if ( fcomand == "POSICAO"){
-			test >> arg;
-			std::cout << "Posição de " << arg << " " <<position(tree, arg) << std::endl;
-		}
-		else if ( fcomand == "MEDIANA"){
-			std::cout<< "Mediana: " <<median(tree) <<std::endl;
-		}
-		else if ( fcomand == "CHEIA"){
-			std::cout << "Eh cheia "<< isFull(tree) <<std::endl;
-		}
-		else if ( fcomand == "COMPLETA"){
-			std::cout << "Eh completa "<< isComplete(tree, tree->nodesL + tree->nodesR + 1) <<std::endl;
-		}
-		else if ( fcomand == "INSIRA"){
-			test >> key;
-			binTreeInsertion(tree, key);
-		}
-		else if ( fcomand == "REMOVA"){
-			test >> key;
-			binTreeRemoval(tree, key);
-		}
-		else{ 
-			printf("IMPRIMINDO MESMO EM\n");
-			std::cout << toString(tree) << std::endl;
-		}
-	}
+int main(){
+    bTree arvore; // Crio uma arvore
+    int no;
 
-}
+    cin >> no; // Lendo o primeiro nó (considerando o primeiro nó como a raiz)
+    arvore.insert(no);
 
-int main(int argc, char* argv[]){
-    Node<int> *root = new Node<int>;
-    buildTree(root,argv[1]);
-    runTest(root, argv[2]);
+    // Inserindo na árvore todos os valores passados no arquivo
+    while (cin >> no)
+        arvore.insert(no);
+
+    // Printando a árvore inicial apenas para teste, para o usuário ver ela sem nenhuma modificação
+    cout << "Árvore inicial: " << endl;
+    arvore.print();
+    cout << endl
+         << endl;
+
+    // Lendo arquivo de comandos
+    fstream arquivo;
+    arquivo.open("./data/comandos.txt");
+
+    string comando_linha; // Para salvar o comando da linha do arquivo
+
+    // Inicializando o map
+    map_funcoes["BUSCA"] = BUSCA;
+    map_funcoes["INSIRA"] = INSIRA;
+    map_funcoes["REMOVA"] = REMOVA;
+
+    // Enquanto tiver comandos para ler
+    while (getline(arquivo, comando_linha)){
+        stringstream ler(comando_linha);
+
+        string funcao; // Para salvar a funcao que está na linha de comando
+        int parametro; // Para salvar o valor que está na linha de comando
+
+        ler >> funcao;
+
+        // Chamando a função para cada uma das funções
+        switch (map_funcoes[funcao]){
+			case BUSCA:
+				ler >> parametro;
+				arvore.search(parametro);
+				break;
+			case INSIRA:
+				ler >> parametro;
+				cout << ">> Inserindo elemento " << parametro << endl;
+				arvore.insert(parametro);
+				break;
+			case REMOVA:
+				ler >> parametro;
+				cout << ">> Removendo elemento " << parametro << endl;
+				arvore.remove(parametro);
+				break;
+			default:
+				cout << "" << endl;
+				cout << ">> Comando não encontrado! " << endl;
+				break;
+        }
+    }
+
+    arquivo.close();
+
+    // Só pra testar mesmo, para o usuário ver a árvore após todas as alterações
+    cout << endl;
+    cout << "Árvore final: " << endl;
+    arvore.print();
+    cout << endl;
+
     return 0;
 }
