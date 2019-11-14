@@ -6,16 +6,14 @@
 #ifndef BTREE
 #define BTREE
 
-#include <iostream>
-#include <forward_list> 
+#include <iostream> 
 #include <vector>
 
 using namespace std;
 
 // Struct que define uma pagina
 struct Node {
-	unsigned int order;				// Ordem d da árvore
-	std::forward_list<int> data;	// Valores dos nós
+	std::vector<int> data;	// Valores dos nós
 	std::vector<Node*> filhos;		// Ponteiros de cada nós
 };
 
@@ -23,9 +21,12 @@ class bTree
 {
 	private:
 		Node *raiz;
+		int order;
 	public:
 
-		bTree(){ }
+		bTree(int ordem){
+			this->order = ordem;
+		}
 
 		~bTree(){
 			delete raiz;
@@ -37,67 +38,65 @@ class bTree
 		 * @return true caso o valor esteja na árvore, e false caso não esteja
 		 */ 
 		bool search(int key){
-			return search_recursive(raiz, key, 0);
+			return search_recursive(raiz, key);
 		}
 
-		bool search_recursive(Node* tree, int key, int index){
+		bool search_recursive(Node* tree, int key){
 			auto it = tree->data.begin();
-
-			while(it != tree->data.end()){
-				// Caso árvore seja vazia
-				if(*it == NULL){
-					cout << "Árvore vazia! \n";
-					return false;
-				}
-
-				// Caso o valor seja a posicao atual
-				if(*it == key)
-					return true;
-
-				// Caso o valor seja maior do que o atual, avança na lista procurando o mesmo
-				if(key > *it)
-					return search_recursive(it.operator++, key, index++);
-				else{
-					// Caso o valor seja maior do que o atual e menor do que o próximo da lista, sigo para a pagina apontada e busco o valor na lista dos filhos
-					if(key > *it && key < *it+1){
-						index = 0;
-						return search_recursive(tree->filhos[index++], key, index);
-					}
-				}
-
-				it++;
+			int i = 0;
+		
+			if(tree == nullptr){
+				cout << "Chave não encontrada\n";
+				return false;
 			}
-			
-			return false;
+		
+			for(; i < tree->data.size(); i++)
+			{
+				if(tree->data[i] == key)
+					return true;
+				
+				if(tree->data[i] > key){
+					return search_recursive(tree->filhos[i], key);
+				}
+			}
+			return search_recursive(*(tree->filhos.end()), key);
+		
 		}
 
 		/**
 		 * Insere um valor na árvore B
 		 */ 
 		void insert(int key){
-			// Caso raiz seja vazia, não faço nada
-			if(raiz == nullptr)
-				return;
-
-			insert_recursive(raiz, key, 0);
-		}
-
-		void insert_recursive(Node* tree, int key, int index){
 			// Caso o valor já esteja na árvore
 			if(search(key)){
 				cout << "erro-insert: Valor " << key << "já está na árvore!";
 				return;
-			} 
-
-			auto it = tree->data.begin();
-			while(it != tree->data.end()){
-				
-				// conferir se eh maior ou menor do q a raiz, descer pelo ponteiro
-				// andar na lista vendo se a ordem já está preenchida
-				// ai tem os casos para conferir que não lembro
-
-				it++;
 			}
+
+			// Se a árvore estiver vazia, insiro o valor na raiz
+			if(raiz == nullptr){
+				raiz = new Node;
+				raiz->data.push_back(key);
+				return;
+			}
+			insert_recursive(raiz, key);
+		}
+
+		void insert_recursive(Node* tree, int key){
+			// Se a pagina ainda estiver espaco, adiciono
+			if (tree->data.size() < 2*this->order){
+				insertion_sort(tree, key);
+				return;
+			}
+			
+			// Se a pagina estiver cheia
+			if(tree->data.size() == order*2){
+				// desço pelo ponteiro
+			}
+		}
+
+		void insertion_sort(Node* node, int key){
+
 		}
 
 		/**
@@ -109,6 +108,21 @@ class bTree
 		}
 
 		void remove_recursive(){
+			// TODO
+		}
+
+		/**
+		 * Funcoes auxiliares para insercao e remocao
+		 */ 
+		void cisao(){
+			// TODO
+		}
+
+		void concatenacao(){
+			// TODO
+		}
+
+		void redistribuicao(){
 			// TODO
 		}
 
