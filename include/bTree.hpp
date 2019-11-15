@@ -54,7 +54,7 @@ bool search(Node* tree, int key){
 }
 
 void insert(Node* root, int k) { 
-    if(root == NULL) { 
+    if(root == nullptr) { 
         root = new Node(root->order, true); 
         root->data.push_back(k);  
 		root->folha = true;
