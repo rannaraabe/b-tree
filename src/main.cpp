@@ -52,7 +52,7 @@ int main(){
 			case BUSCA:
 				ler >> parametro;
                 cout << ">> Buscando elemento " << parametro << endl;
-				search(arvore, parametro);
+				search(arvore, parametro) ? cout << "Achei\n": cout<<"Não Achei\n";
 				break;
 			case INSIRA:
 				ler >> parametro;

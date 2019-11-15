@@ -44,7 +44,6 @@ bool search(Node* tree, int key){
     if(tree->data[i] == key) 
         return true; 
 
-	printf("OI \n");
     if(tree->folha == true){
 		for(int j = 0; j < tree->data.size(); j++){
 			if(tree->data[j] == key) 
@@ -113,7 +112,7 @@ void cisao(Node* s, int i, Node *y){
         z->data.push_back(y->data[j+y->order]); 
 	}
 	y->data.erase(y->data.begin() + y->order,y->data.end());
-  
+
     if (y->folha == false){ 
         for (int j = 0; j < s->order; j++) 
             z->filhos.push_back(y->filhos[j+y->order]); 
@@ -121,13 +120,20 @@ void cisao(Node* s, int i, Node *y){
   
     for (int j = s->data.size(); j >= i+1; j--) 
         s->filhos[j+1] = s->filhos[j]; 
+	printf("oi\n");
   
     s->filhos[i+1] = z; 
   
+	printf("oii\n");
     for (int j = s->data.size()-1; j >= i; j--) 
         s->data[j+1] = s->data[j]; 
   
-    s->data[i] = y->data[s->order-1]; 
+	printf("oiii\n");
+	cout << y->data.size() << " <? " << s->order-1 << endl;
+	cout << i << " <? " << s->data.size() << endl;
+	if (s->data.empty()) s->data.push_back(y->data[s->order-1]);
+	else 
+		s->data[i] = y->data[s->order-1]; 
 } 
 
 void ordenar(vector<int> vector){
