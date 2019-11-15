@@ -30,6 +30,8 @@ int main(){
     cin >> no; // Lendo o primeiro nó (considerando o primeiro nó como a raiz)
     arvore.insert(no);
 
+    cout << "Árvore inicial: " << endl;
+    arvore.print();
     // Inserindo na árvore todos os valores passados no arquivo
     while (cin >> no)
         arvore.insert(no);
@@ -37,8 +39,7 @@ int main(){
     // Printando a árvore inicial apenas para teste, para o usuário ver ela sem nenhuma modificação
     cout << "Árvore inicial: " << endl;
     arvore.print();
-    cout << endl
-         << endl;
+    cout << endl << endl;
 
     // Lendo arquivo de comandos
     fstream arquivo;

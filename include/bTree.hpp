@@ -212,7 +212,17 @@ class bTree {
 		 * Função auxiliar para imprimir a árvore
 		 */ 
 		void print(){
-			cout << "";
+			print_recursive(raiz);
 		}
+
+	   void print_recursive(Node* raiz){
+		   if (raiz == nullptr) return;
+		   int i = 0;
+		   for(; i< raiz->data.size(); ++i){
+               print_recursive(raiz->filhos[i]);
+			   cout << raiz->data[i] << " ";
+		   }
+           print_recursive(raiz->filhos[i]);
+	   }
 };
 #endif
