@@ -45,43 +45,11 @@ bool search(Node* tree, int key){
 }
 
 void insert(Node* tree, int key){
-	// Se a pagina tiver espaco, adiciono a chave
-	if(tree->filhos.empty())
-		insert(tree, key);
-
-	
-	if(tree->data.size() < tree->order*2){
-		for (int i = 0; i< tree->data.size(); ++i){
-			if (key < tree->data[i]){
-				insert(tree->filhos[i], key);
-				break;
-			}
-		}			
-	}
-	printf("oi amiguinho \n");
-	
-	
-	// Se a pagina estiver cheia, faço a cisao
-	if(tree->data.size() >= tree->order*2){
-		Node* new_raiz = new Node();
-		
-		// Novo raiz recebe a raiz antiga como filho
-		new_raiz->filhos[0] = tree;
-		
-		// Divide a raiz antiga e 
-		
-		// Nova raiz possui novo filho, decido qual dos filhos terão nova chave
-		int i = 0; 
-		if(new_raiz->data[0] < key) 
-			i++; 
-		
-		insert(new_raiz->filhos[i], key);
-		tree = new_raiz; 
-	}
+	// TODO
 }
 
 void cisao(Node* pagina1, Node* pagina2){
-
+	// TODO
 }
 
 void ordenar(vector<int> vector){
