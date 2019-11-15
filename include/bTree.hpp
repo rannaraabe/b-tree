@@ -38,9 +38,13 @@ bool search(Node* tree, int key){
     int i = 0; 
     while(i < tree->data.size() && key > tree->data[i]) i++; 
   
+	if (tree->data.empty())
+		return false;
+
     if(tree->data[i] == key) 
         return true; 
 
+	printf("OI \n");
     if(tree->folha == true){
 		for(int j = 0; j < tree->data.size(); j++){
 			if(tree->data[j] == key) 
