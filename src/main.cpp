@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-#include "bTree.hpp"
+#include "../include/bTree.hpp"
 
 using namespace std;
 
@@ -24,7 +24,7 @@ enum cod_funcoes {
 map<string, cod_funcoes> map_funcoes;
 
 int main(){
-    bTree arvore; // Crio uma arvore
+    bTree arvore(3); // Crio uma arvore com ordem 3
     int no;
 
     cin >> no; // Lendo o primeiro nó (considerando o primeiro nó como a raiz)
@@ -64,6 +64,7 @@ int main(){
         switch (map_funcoes[funcao]){
 			case BUSCA:
 				ler >> parametro;
+                cout << ">> Buscando elemento " << parametro << endl;
 				arvore.search(parametro);
 				break;
 			case INSIRA:
