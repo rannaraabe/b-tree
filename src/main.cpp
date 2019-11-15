@@ -24,24 +24,10 @@ enum cod_funcoes {
 map<string, cod_funcoes> map_funcoes;
 
 int main(){
-    bTree arvore(3); // Crio uma arvore com ordem 3
+    Node* arvore; // Crio uma arvore com ordem 3
+	arvore->order = 3;
     int no;
 
-    cin >> no; // Lendo o primeiro nó (considerando o primeiro nó como a raiz)
-    arvore.insert(no);
-
-    cout << "Árvore inicial: " << endl;
-    arvore.print();
-    // Inserindo na árvore todos os valores passados no arquivo
-    while (cin >> no)
-        arvore.insert(no);
-
-    // Printando a árvore inicial apenas para teste, para o usuário ver ela sem nenhuma modificação
-    cout << "Árvore inicial: " << endl;
-    arvore.print();
-    cout << endl << endl;
-
-    // Lendo arquivo de comandos
     fstream arquivo;
     arquivo.open("./data/comandos.txt");
 
@@ -66,17 +52,17 @@ int main(){
 			case BUSCA:
 				ler >> parametro;
                 cout << ">> Buscando elemento " << parametro << endl;
-				arvore.search(parametro);
+				search(arvore, parametro);
 				break;
 			case INSIRA:
 				ler >> parametro;
 				cout << ">> Inserindo elemento " << parametro << endl;
-				arvore.insert(parametro);
+				insert(arvore, parametro);
 				break;
 			case REMOVA:
 				ler >> parametro;
 				cout << ">> Removendo elemento " << parametro << endl;
-				arvore.remove(parametro);
+				remove(arvore, parametro);
 				break;
 			default:
 				cout << "" << endl;
@@ -90,7 +76,6 @@ int main(){
     // Só pra testar mesmo, para o usuário ver a árvore após todas as alterações
     cout << endl;
     cout << "Árvore final: " << endl;
-    arvore.print();
     cout << endl;
 
     return 0;
