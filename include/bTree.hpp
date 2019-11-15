@@ -22,6 +22,10 @@ struct Node {
     Node() : data(), filhos() {}
 };
 
+void search(Node* tree, int key){
+
+}
+
 void insert(Node* tree, int key){
 	// Se a pagina tiver espaco, adiciono a chave
 	if(tree->filhos.empty())
@@ -58,7 +62,7 @@ void insert(Node* tree, int key){
 	}
 }
 
-void search(Node* tree, int key){
+void cisao(Node* pagina1, Node* pagina2){
 
 }
 
@@ -73,37 +77,63 @@ void ordenar(vector<int> vector){
 
 void remove(Node* tree, int key){
 	// TODO
+
+	/*
+	if(paginas_vizinhas < 2*tree->order)
+		concatenacao();
+	if(paginas_vizinhas > 2*tree->order)
+		redistribuicao();
+	*/
 }
 
-void concatenacao(Node* tree, int index_pag){
+void concatenacao(Node* tree, int index_pag){	// eh propagavel
 	Node* pag_filha = tree->filhos[index_pag];
 	Node* pag_vizinha = tree->filhos[index_pag+1];
 	
-	if(pag_filha->data.size()+pag_vizinha->filhos.size() < 2*tree->order){
-		int quantidade = pag_filha->data.size();
-		
-		int index_vizinha = 0;
+	int quantidade = pag_filha->data.size();
+	
+	int index_vizinha = 0;
+	for(int i = quantidade+1; i<pag_vizinha->data.size(); i++){
+		pag_filha->data[i] = pag_vizinha->data[index_vizinha];
+		index_vizinha++;
+	}
+
+	if(!pag_filha->folha){
+		index_vizinha = 0;
+
 		for(int i = quantidade+1; i<pag_vizinha->data.size(); i++){
-			pag_filha->data[i] = pag_vizinha->data[index_vizinha];
+			pag_filha->filhos[i] = pag_vizinha->filhos[index_vizinha];
 			index_vizinha++;
 		}
-
-		if(!pag_filha->folha){
-			index_vizinha = 0;
-
-			for(int i = quantidade+1; i<pag_vizinha->data.size(); i++){
-				pag_filha->filhos[i] = pag_vizinha->filhos[index_vizinha];
-				index_vizinha++;
-			}
-		}
-
-		ordenar(pag_filha->data); // Ordeno pq eh provavel q ele insira valores nos lugares errados
-		delete(pag_vizinha);
 	}
+
+	ordenar(pag_filha->data); // Ordeno pq eh provavel q ele insira valores nos lugares errados
+	delete(pag_vizinha);
 }
 
-void redistribuicao(){
-	// TODO
+void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
+	Node* pag_filha = tree->filhos[index_pag];
+	Node* pag_vizinha = tree->filhos[index_pag+1];
+	
+	int quantidade = pag_filha->data.size();
+	
+	int index_vizinha = 0;
+	for(int i = quantidade+1; i<pag_vizinha->data.size(); i++){
+		pag_filha->data[i] = pag_vizinha->data[index_vizinha];
+		index_vizinha++;
+	}
+
+	if(!pag_filha->folha){
+		index_vizinha = 0;
+
+		for(int i = quantidade+1; i<pag_vizinha->data.size(); i++){
+			pag_filha->filhos[i] = pag_vizinha->filhos[index_vizinha];
+			index_vizinha++;
+		}
+	}
+
+	ordenar(pag_filha->data); // Ordeno pq eh provavel q ele insira valores nos lugares errados
+	cisao(pag_filha, pag_vizinha);
 }
 
 #endif
