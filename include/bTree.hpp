@@ -31,7 +31,7 @@ class bTree {
 			this->order = ordem;
 		}
 
-		~bTree(){
+			~bTree(){
 			delete raiz;
 		}
 
@@ -41,6 +41,7 @@ class bTree {
 		 * @return true caso o valor esteja na árvore, e false caso não esteja
 		 */ 
 		bool search(int key){
+			if (raiz == nullptr) return false;
 			return search_recursive(raiz, key);
 		}
 
