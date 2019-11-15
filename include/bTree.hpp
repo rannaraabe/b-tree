@@ -22,8 +22,26 @@ struct Node {
     Node() : data(), filhos() {}
 };
 
-void search(Node* tree, int key){
+bool search(Node* tree, int key){
+	if(tree == nullptr)
+		return false;
 
+    int i = 0; 
+    while(i < tree->data.size() && key > tree->data[i]) i++; 
+  
+    if(tree->data[i] == key) 
+        return true; 
+
+    if(tree->folha == true){
+		for(int j = 0; j < tree->data.size(); j++){
+			if(tree->data[j] == key) 
+        		return true; 
+
+			return false;
+		}	
+	} 
+    
+	return search(tree->filhos[i], key); 
 }
 
 void insert(Node* tree, int key){
