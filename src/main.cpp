@@ -24,11 +24,14 @@ enum cod_funcoes {
 map<string, cod_funcoes> map_funcoes;
 
 int main(){
-    Node* arvore = new Node(3, true); // Crio uma arvore com ordem 3
-	arvore->order = 3;
-
     fstream arquivo;
     arquivo.open("./data/comandos.txt");
+    
+    // int ordem;
+    // cin >> ordem;
+
+    Node* arvore = new Node(4, true); // Crio uma arvore com ordem 3
+	arvore->order = 4;
 
     string comando_linha; // Para salvar o comando da linha do arquivo
 

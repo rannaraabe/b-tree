@@ -18,14 +18,14 @@ struct Node {
 	std::vector<int> data;			// Valores dos nós
 	std::vector<Node*> filhos;		// Ponteiros de cada nós
 	int order;						// Ordem da pag
-	bool folha;						// Bool para saber se a pagina eh folha
-	int nivel;
+	bool folha;						// Boolean para saber se a pagina é folha ou nao
+
 	// Construtor do node
 	Node(int _order, bool _folha) : order{_order}, folha{_folha}
 	{}
 };
 
-// Declarando funcoes
+// Declarando as funcoes
 bool search(Node* tree, int key);
 void insert(Node* raiz, int k);
 void insert_naocheia(Node* node, int k);
@@ -33,164 +33,189 @@ void cisao(Node* s, int i, Node *y);
 void ordenar(vector<int> vector);
 void remove(Node* tree, int key);
 int encontrar_chave(Node *node, int key);
-int get_predecessor(Node *tree, int idx);
-int get_sucessor(Node *tree, int idx);
+int get_predecessor(Node *tree, int i);
+int get_sucessor(Node *tree, int i);
 void concatenacao(Node* tree, int index_pag);
 void redistribuicao(Node* tree, int index_pag);
 
+////////////////////////////////////////////// SEARCH //////////////////////////////////////////////
+
 /**
  * Funcao busca um valor na arvore
+ * 
+ * @return true caso o elemento esteja na árvore, false caso contrário
  */ 
 bool search(Node* tree, int key){
+	// Caso a arvore seja vazia
 	if(tree == nullptr)
 		return false;
 
+	// Condicao para salvar o i enquanto a chave for maior dos que os valores da pagina
     int i = 0; 
     while(i < tree->data.size() && key > tree->data[i]) i++; 
   
-	if (tree->data.empty())
+	// Caso a pagina esteja vazia, sem valor nenhum
+	if(tree->data.empty())
 		return false;
 
+	// Caso a chave esteja na posicao atual
     if(tree->data[i] == key) 
         return true; 
 
-    if(tree->folha == true){
+	// Caso esteja numa folha percorro procurando a chave em cada posicao da folha
+    if(tree->folha){
 		for(int j = 0; j < tree->data.size(); j++){
 			if(tree->data[j] == key) 
         		return true; 
 
 			return false;
 		}	
-	} 
+	}
+
+	// Chamo a funcao para buscar o valor no proximo filho (no proximo ponteiro) 
 	return search(tree->filhos[i], key); 
 }
+
+////////////////////////////////////////////// INSERT //////////////////////////////////////////////
 
 /**
  * Funcao insere um valor na arvore
  */
-void insert(Node* raiz, int key) { 
-	if(search(raiz, key)){
-		cout << "erro-insert: O elemento já está na árvore!\n" << endl;
+void insert(Node* tree, int key) { 
+	// Verifico se o valor já está na árvore
+	if(search(tree, key)){
+		cout << "erro-insert: O elemento já está na árvore!" << endl;
 		return;
 	}
 
-    if(raiz == nullptr) { 
-        raiz = new Node(raiz->order, true); 
-        raiz->data.push_back(key);  
-		raiz->folha = true;
+	// Se a árvore for vazia, aloco um espaco para o primeiro valor
+    if(tree == nullptr) { 
+        tree = new Node(tree->order, true); 
+        tree->data.push_back(key);  
+		tree->folha = true;
     } else { 
-        if(raiz->data.size() == 2*raiz->order-1){ 
-            Node *node = new Node(raiz->order, false); 
-  
-            node->filhos.push_back(raiz); 
-            cisao(node, 0, raiz); 
-  
+		// Verifico se a pagina está cheia
+        if(tree->data.size() == 2*tree->order-1){ 
+			// Crio um novo nó não-folha e faço a cisao
+            Node *node = new Node(tree->order, false); 
+            node->filhos.push_back(tree); 
+            cisao(node, 0, tree); 
+
+			// Se a chave que quero inserir for maior do que a posicao no novo nó
             int i = 0; 
-            if(node->data[0] < key) 
+            if(key > node->data[0]) 
                 i++; 
-          
+
+			// Depois da cisao chamo a funcao para inserir na pagina atual (que nao esta cheia)
 		    insert_naocheia(node->filhos[i], key); 
-            raiz = node; 
+            tree = node; 
         } else 
-            insert_naocheia(raiz, key); 
+			// Caso a pagina nao esteja cheia, eu nao preciso fazer cisao, entao so chamo a funcao de inserir na pagina nao cheia
+            insert_naocheia(tree, key); 
     } 
 } 
 
 /**
- * Funcao auxiliar para inserir um valor na arvore 
+ * Funcao auxiliar para inserir um valor em uma pagina que nao está cheia na arvore 
  */
-void insert_naocheia(Node* node, int k){ 
+void insert_naocheia(Node* node, int key){ 
+	// Inicializo o i
     int i = node->data.size() - 1; 
   
-    if(node->folha == true){ 
-        while(i >= 0 && node->data[i] > k){ 
+	// Se for folha
+    if(node->folha){ 
+		// Enquanto a chave for menor no que a valor da posicao atual, vou "empurrando" os valores para a direita (para colocar o valor na esquerda)
+        while(i >= 0 && node->data[i] > key){ 
             node->data[i+1] = node->data[i]; 
             i--; 
         } 
-  
-        node->data.insert(node->data.begin() + i + 1, k);
+
+		// Depois de ter "empurrado" todo mundo que queria, insiro o valor na posicao certa
+        node->data.insert(node->data.begin() + i + 1, key);
     } else { 
-        while(i >= 0 && node->data[i] > k) 
+        while(i >= 0 && node->data[i] > key) 
             i--; 
-  
+
+		// Se a pagina estiver cheia, faco a cisao 
         if(node->filhos[i+1]->data.size() == 2*node->order-1){ 
             cisao(node, i+1, node->filhos[i+1]); 
   
-            if(node->data[i+1] < k) 
+            if(key >node->data[i+1]) 
                 i++; 
         } 
-
-        insert_naocheia(node->filhos[i+1], k); 
+		// Depois de fazer a cisao, insiro o elemento na pagina
+        insert_naocheia(node->filhos[i+1], key); 
     } 
 } 
 
 /**
  * Funcao que realiza a cisao de paginas na arvore
  */
-void cisao(Node* s, int i, Node *y){ 
-    Node *z = new Node(y->order, y->folha); 
-    for(int j = 0; j < y->order-1; j++) {
-        z->data.push_back(y->data[j+y->order]); 
-	}
-	y->data.erase(y->data.begin() + y->order,y->data.end());
+void cisao(Node* pagina_pai, int i, Node* pagina){ 		// a variavel i guarda o i na pag 
+	// Crio uma nova pagina
+	Node* new_pagina = new Node(pagina->order, pagina->folha); 
+    
+	// Guardo na nova pagina os ultimos valores da pagina que estou fazendo cisao
+	for(int j = 0; j < pagina->order-1; j++)
+        new_pagina->data.push_back(pagina->data[j + pagina->order]); 
+	
+	pagina->data.erase(pagina->data.begin() + pagina->order, pagina->data.end());
 
-    if(y->folha == false){ 
-        for (int j = 0; j < s->order; j++) 
-            z->filhos.push_back(y->filhos[j+y->order]); 
+	// Guardo na nova pagina os ultimos filhos da pagina que estou fazendo cisao (se for folha, nao preciso copiar os filhos)
+    if(!pagina->folha){ 
+        for (int j = 0; j < pagina_pai->order; j++) 
+            new_pagina->filhos.push_back(pagina->filhos[j + pagina->order]); 
     } 
   
-    for(int j = s->data.size(); j >= i+1; j--) 
-        s->filhos[j+1] = s->filhos[j]; 
+	// Crio um novo espaco na pagina pai para o novo filho que vai entrar
+    for(int j = pagina_pai->data.size(); j >= i+1; j--) 
+        pagina_pai->filhos[j+1] = pagina_pai->filhos[j]; 
   
-    s->filhos[i+1] = z; 
+	// Coloco na pagina pai o novo filho
+    pagina_pai->filhos[i+1] = new_pagina; 
   
-    for(int j = s->data.size()-1; j >= i; j--) 
-        s->data[j+1] = s->data[j]; 
+	// Procuro onde colocar a nova chave, "empurrando" todos os valores maiores do que ela para frente
+    for(int j = pagina_pai->data.size()-1; j >= i; j--) 
+        pagina_pai->data[j+1] = pagina_pai->data[j]; 
   
-	if(s->data.empty())
-		s->data.push_back(y->data[s->order-1]);
+	if(pagina_pai->data.empty())
+		pagina_pai->data.push_back(pagina->data[pagina_pai->order-1]);
 	else 
-		s->data[i] = y->data[s->order-1]; 
+		// Copio a chave mediana para a pagina pai
+		pagina_pai->data[i] = pagina->data[pagina_pai->order-1]; 
 } 
 
-/**
- * Funcao auxiliar que ordena os valores na arvore
- */
-void ordenar(vector<int> vector){
-	for(int i = 0; i<vector.size(); ++i)
-		for (int j = 0; j <vector.size() - i - 1; j++){
-			int tem = vector[j];
-			vector[j] = vector[j+1];
-			vector[j+1] = tem;
-		}	
-}
+////////////////////////////////////////////// REMOVE //////////////////////////////////////////////
 
 /**
  * Funcao remove um valor na arvore
  */
 void remove(Node* tree, int key){
-	int idx = encontrar_chave(tree, key); 
+	int i = encontrar_chave(tree, key); 
 
-    if (idx < tree->order && tree->data[idx] == key){
+    if (i < tree->order && tree->data[i] == key){
         if (tree->folha) {
-			for (int i=idx+1; i<tree->data.size(); ++i) 
-			tree->data[i-1] = tree->data[i]; 
+			for (int i=i+1; i<tree->data.size(); ++i) 
+				tree->data[i-1] = tree->data[i]; 
 		} 
         else{
-			int k = tree->data[idx]; 
-			if (tree->filhos[idx]->order >= tree->order) {
-				int pred = get_predecessor(tree, idx); 
-				tree->data[idx] = pred; 
-				remove(tree->filhos[idx], pred); 
+			int k = tree->data[i]; 
+			if (tree->filhos[i]->order >= tree->order) {
+				int pred = get_predecessor(tree, i); 
+				tree->data[i] = pred; 
+				
+				remove(tree->filhos[i], pred); 
 			}
-			else if(tree->filhos[idx+1]->order >= tree->order) { 
-				int succ = get_sucessor(tree, idx); 
-				tree->data[idx] = succ; 
-				remove(tree->filhos[idx+1], succ); 
+			else if(tree->filhos[i+1]->order >= tree->order) { 
+				int succ = get_sucessor(tree, i); 
+				tree->data[i] = succ; 
+				
+				remove(tree->filhos[i+1], succ); 
 			} 
 			else { 
-				concatenacao(tree, idx); 
-				remove(tree->filhos[idx], k); 
+				// Entao as paginas vizinhas somadas sao menores do que 2*ordem, faco a concatenacao e depois removo o valor
+				concatenacao(tree, i); 
+				remove(tree->filhos[i], k); 
 			} 
 		}
     } else { 
@@ -199,42 +224,36 @@ void remove(Node* tree, int key){
             return; 
         } 
 
-        bool flag = ((idx==tree->order) ? true : false ); 
+        bool flag = ((i==tree->order) ? true : false ); 
   
-        if (tree->filhos[idx]->order < tree->order) 
-            redistribuicao(tree, idx); 
-        if (flag && idx > tree->order) 
-        	remove(tree->filhos[idx-1], key); 
+		// Se as paginas vizinhas somadas sao maiores do que 2*ordem, faco a redistribuicao
+        if (tree->filhos[i]->order < tree->order) 
+            redistribuicao(tree, i); 
+        if (flag && i > tree->order) 
+        	remove(tree->filhos[i-1], key); 
         else
-            remove(tree->filhos[idx], key); 
+            remove(tree->filhos[i], key); 
     } 
-    return; 
-
-	/*
-	if(paginas_vizinhas < 2*tree->order)
-		concatenacao();
-	if(paginas_vizinhas > 2*tree->order)
-		redistribuicao();
-	*/
+    return;
 }
 
 /**
- * Funcao auxiliar que encontra o indice de um valor na arvore
+ * Funcao auxiliar que encontra o i de um valor na arvore
  */
 int encontrar_chave(Node *node, int key) {  
-    int idx=0; 
+    int i = 0; 
     
-	while (idx<node->order && node->data[idx] < key) 
-        ++idx; 
+	while (i<node->order && node->data[i] < key) 
+        ++i; 
 
-    return idx; 
+    return i; 
 } 
 
 /**
  * Funcao auxiliar que retorna o predecessor um valor na arvore
  */
-int get_predecessor(Node *tree, int idx) {
-    Node *cur = tree->filhos[idx]; 
+int get_predecessor(Node *tree, int i) {
+    Node *cur = tree->filhos[i]; 
 
     while (!cur->folha) 
         cur = cur->filhos[cur->order]; 
@@ -245,8 +264,8 @@ int get_predecessor(Node *tree, int idx) {
 /**
  * Funcao auxiliar que retorna o sucessor um valor na arvore
  */
-int get_sucessor(Node *tree, int idx) {
-    Node *cur = tree->filhos[idx+1]; 
+int get_sucessor(Node *tree, int i) {
+    Node *cur = tree->filhos[i+1]; 
     
 	while (!cur->folha) 
         cur = cur->filhos[0]; 
@@ -312,18 +331,35 @@ void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
 }
 
 /**
+ * Funcao auxiliar que ordena os valores na arvore
+ */
+void ordenar(vector<int> vector){
+	// Bubble sort para ordenar uma pagina
+	for(int i = 0; i<vector.size(); ++i)
+		for (int j = 0; j <vector.size() - i - 1; j++){
+			int temp = vector[j];
+			vector[j] = vector[j+1];
+			vector[j+1] = temp;
+		}	
+}
+
+////////////////////////////////////////////// PLUS //////////////////////////////////////////////
+
+/**
  * Funcao auxiliar que pinta a arvore
  */
 void print(Node* tree){
-	// if(tree != nullptr){
-	// 	for(int i = 0; i < tree->order*2; i++){ 
-	// 		if(tree->folha) 
-	// 			cout << " " << tree->data[i];
-	// 		else	
-	// 			print(tree->filhos[i]); 
-    // 	}
-	// }
-	// return;
+	if(tree != nullptr){
+		for(int i = 0; i < tree->order*2; i++){ 
+			// Caso a pagina seja uma folha, imprimo suas chaves guardadas
+			if(tree->folha) 
+				cout << " " << tree->data[i];
+			else	
+				// Caso n seja, desço para imprimir os filhos
+				print(tree->filhos[i]); 
+    	}
+	}
+	return;
 
 	// stack<Node*> stack;
     // stack.push(tree);
