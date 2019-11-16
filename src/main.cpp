@@ -26,7 +26,6 @@ map<string, cod_funcoes> map_funcoes;
 int main(){
     Node* arvore = new Node(3, true); // Crio uma arvore com ordem 3
 	arvore->order = 3;
-    int no;
 
     fstream arquivo;
     arquivo.open("./data/comandos.txt");
@@ -51,8 +50,8 @@ int main(){
         switch (map_funcoes[funcao]){
 			case BUSCA:
 				ler >> parametro;
-                cout << ">> Buscando elemento " << parametro << endl;
-				search(arvore, parametro) ? cout << "Achei\n": cout<<"Não Achei\n";
+                cout << ">> Buscando elemento " << parametro << ": ";
+				search(arvore, parametro) ? cout << "O elemento está na árvore\n": cout<<"O não elemento está na árvore\n";
 				break;
 			case INSIRA:
 				ler >> parametro;
@@ -76,6 +75,7 @@ int main(){
     // Só pra testar mesmo, para o usuário ver a árvore após todas as alterações
     cout << endl;
     cout << "Árvore final: " << endl;
+    print(arvore);
     cout << endl;
 
     return 0;

@@ -23,11 +23,14 @@ struct Node {
 };
 
 bool search(Node* tree, int key);
-void insert(Node* root, int k);
-void insertNonFull(Node* s, int k);
+void insert(Node* raiz, int k);
+void insert_naocheia(Node* node, int k);
 void cisao(Node* s, int i, Node *y);
 void ordenar(vector<int> vector);
 void remove(Node* tree, int key);
+int encontrar_chave(Node *node, int key);
+int get_predecessor(Node *tree, int idx);
+int get_sucessor(Node *tree, int idx);
 void concatenacao(Node* tree, int index_pag);
 void redistribuicao(Node* tree, int index_pag);
 
@@ -56,82 +59,77 @@ bool search(Node* tree, int key){
 	return search(tree->filhos[i], key); 
 }
 
-void insert(Node* root, int k) { 
-    if(root == nullptr) { 
-        root = new Node(root->order, true); 
-        root->data.push_back(k);  
-		root->folha = true;
+void insert(Node* raiz, int k) { 
+    if(raiz == nullptr) { 
+        raiz = new Node(raiz->order, true); 
+        raiz->data.push_back(k);  
+		raiz->folha = true;
     } 
     else { 
-        if(root->data.size() == 2*root->order-1){ 
-            Node *s = new Node(root->order, false); 
+        if(raiz->data.size() == 2*raiz->order-1){ 
+            Node *node = new Node(raiz->order, false); 
   
-            s->filhos.push_back(root); 
-  
-            cisao(s, 0, root); 
+            node->filhos.push_back(raiz); 
+            cisao(node, 0, raiz); 
   
             int i = 0; 
-            if (s->data[0] < k) 
+            if(node->data[0] < k) 
                 i++; 
           
-		    insertNonFull(s->filhos[i],k); 
-            root = s; 
+		    insert_naocheia(node->filhos[i],k); 
+            raiz = node; 
         } else 
-            insertNonFull(root, k); 
+            insert_naocheia(raiz, k); 
     } 
 } 
   
-void insertNonFull(Node* s, int k){ 
-    int i = s->data.size() - 1; 
+void insert_naocheia(Node* node, int k){ 
+    int i = node->data.size() - 1; 
   
-    if(s->folha == true){ 
-        while(i >= 0 && s->data[i] > k){ 
-            s->data[i+1] = s->data[i]; 
+    if(node->folha == true){ 
+        while(i >= 0 && node->data[i] > k){ 
+            node->data[i+1] = node->data[i]; 
             i--; 
         } 
   
-        s->data.insert(s->data.begin() + i + 1, k);
+        node->data.insert(node->data.begin() + i + 1, k);
     } else { 
-        
-        while(i >= 0 && s->data[i] > k) 
+        while(i >= 0 && node->data[i] > k) 
             i--; 
   
-        if(s->filhos[i+1]->data.size() == 2*s->order-1){ 
-            cisao(s, i+1, s->filhos[i+1]); 
+        if(node->filhos[i+1]->data.size() == 2*node->order-1){ 
+            cisao(node, i+1, node->filhos[i+1]); 
   
-            if(s->data[i+1] < k) 
+            if(node->data[i+1] < k) 
                 i++; 
         } 
-        insertNonFull(s->filhos[i+1], k); 
+
+        insert_naocheia(node->filhos[i+1], k); 
     } 
 } 
   
 void cisao(Node* s, int i, Node *y){ 
     Node *z = new Node(y->order, y->folha); 
-    for (int j = 0; j < y->order-1; j++) {
+    for(int j = 0; j < y->order-1; j++) {
         z->data.push_back(y->data[j+y->order]); 
 	}
 	y->data.erase(y->data.begin() + y->order,y->data.end());
 
-    if (y->folha == false){ 
+    if(y->folha == false){ 
         for (int j = 0; j < s->order; j++) 
             z->filhos.push_back(y->filhos[j+y->order]); 
     } 
   
-    for (int j = s->data.size(); j >= i+1; j--) 
+    for(int j = s->data.size(); j >= i+1; j--) 
         s->filhos[j+1] = s->filhos[j]; 
-	printf("oi\n");
   
     s->filhos[i+1] = z; 
   
-	printf("oii\n");
-    for (int j = s->data.size()-1; j >= i; j--) 
+    for(int j = s->data.size()-1; j >= i; j--) 
         s->data[j+1] = s->data[j]; 
   
-	printf("oiii\n");
-	cout << y->data.size() << " <? " << s->order-1 << endl;
-	cout << i << " <? " << s->data.size() << endl;
-	if (s->data.empty()) s->data.push_back(y->data[s->order-1]);
+	if(s->data.empty())
+		s->data.push_back(y->data[s->order-1]);
 	else 
 		s->data[i] = y->data[s->order-1]; 
 } 
@@ -146,7 +144,46 @@ void ordenar(vector<int> vector){
 }
 
 void remove(Node* tree, int key){
-	// TODO
+	int idx = encontrar_chave(tree, key); 
+
+    if (idx < tree->order && tree->data[idx] == key){
+        if (tree->folha) {
+			for (int i=idx+1; i<tree->data.size(); ++i) 
+			tree->data[i-1] = tree->data[i]; 
+		} 
+        else{
+			int k = tree->data[idx]; 
+			if (tree->filhos[idx]->order >= tree->order) {
+				int pred = get_predecessor(tree, idx); 
+				tree->data[idx] = pred; 
+				remove(tree->filhos[idx], pred); 
+			}
+			else if(tree->filhos[idx+1]->order >= tree->order) { 
+				int succ = get_sucessor(tree, idx); 
+				tree->data[idx] = succ; 
+				remove(tree->filhos[idx+1], succ); 
+			} 
+			else { 
+				concatenacao(tree, idx); 
+				remove(tree->filhos[idx], k); 
+			} 
+		}
+    } else { 
+        if(tree->folha) { 
+            cout << "Chave não encontrada na arvore! \n"; 
+            return; 
+        } 
+
+        bool flag = ((idx==tree->order) ? true : false ); 
+  
+        if (tree->filhos[idx]->order < tree->order) 
+            redistribuicao(tree, idx); 
+        if (flag && idx > tree->order) 
+        	remove(tree->filhos[idx-1], key); 
+        else
+            remove(tree->filhos[idx], key); 
+    } 
+    return; 
 
 	/*
 	if(paginas_vizinhas < 2*tree->order)
@@ -155,6 +192,34 @@ void remove(Node* tree, int key){
 		redistribuicao();
 	*/
 }
+
+int encontrar_chave(Node *node, int key) {  
+    int idx=0; 
+    
+	while (idx<node->order && node->data[idx] < key) 
+        ++idx; 
+
+    return idx; 
+} 
+
+int get_predecessor(Node *tree, int idx) {
+    Node *cur = tree->filhos[idx]; 
+
+    while (!cur->folha) 
+        cur = cur->filhos[cur->order]; 
+  
+    return cur->data[cur->order-1]; 
+} 
+  
+int get_sucessor(Node *tree, int idx) {
+    Node *cur = tree->filhos[idx+1]; 
+    
+	while (!cur->folha) 
+        cur = cur->filhos[0]; 
+  
+     
+    return cur->data[0]; 
+} 
 
 void concatenacao(Node* tree, int index_pag){	// eh propagavel
 	Node* pag_filha = tree->filhos[index_pag];
@@ -204,5 +269,15 @@ void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
 
 	ordenar(pag_filha->data); // Ordeno pq eh provavel q ele insira valores nos lugares errados
 	cisao(pag_filha, 0, pag_vizinha);
+}
+
+void print(Node* tree){
+	if(tree != nullptr){
+		for(int i = 0; i < tree->order; i++){ 
+			if(tree->folha == false) 
+				print(tree->filhos[i]); 
+			cout << " " << tree->data[i]; 
+    	}
+	}
 }
 #endif
