@@ -142,7 +142,7 @@ void cisao(Node* s, int i, Node *y){
     for(int j = s->data.size(); j >= i+1; j--) 
         s->filhos[j+1] = s->filhos[j]; 
   
-    s->filhos[i+1] = z; 
+    s->filhos.insert(s->filhos.begin() + i + 1, z);
   
     for(int j = s->data.size()-1; j >= i; j--) 
         s->data[j+1] = s->data[j]; 
@@ -150,7 +150,7 @@ void cisao(Node* s, int i, Node *y){
 	if(s->data.empty())
 		s->data.push_back(y->data[s->order-1]);
 	else 
-		s->data[i] = y->data[s->order-1]; 
+		s->data.insert(s->data.begin() + i , y->data[s->order-1]);
 } 
 
 /**
@@ -315,29 +315,14 @@ void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
  * Funcao auxiliar que pinta a arvore
  */
 void print(Node* tree){
-	// if(tree != nullptr){
-	// 	for(int i = 0; i < tree->order*2; i++){ 
-	// 		if(tree->folha) 
-	// 			cout << " " << tree->data[i];
-	// 		else	
-	// 			print(tree->filhos[i]); 
-    // 	}
-	// }
-	// return;
-
-	// stack<Node*> stack;
-    // stack.push(tree);
-    // while (!stack.empty()){
-    //     Node* raiz = stack.top();
-    //     stack.pop();
-    //     int i;
-    //     for(i = 0; i < tree->order*2; i++){
-    //         if(tree->folha == false)
-    //             stack.push(raiz->filhos[i]); 
-    //         cout << " " << raiz->data[i];
-    //     }
-    //     if (tree->folha == false)
-    //         stack.push(raiz->filhos[i]);
-    // }
+	if (tree == nullptr) return;
+	for (int i = 0; i < tree->data.size(); ++i){
+		printf("oi \n");
+		if (!tree->filhos.empty())
+			print(tree->filhos[i]);
+		cout << tree->data[i] << " ";
+	}
+	if (!tree->filhos.empty())
+		print(*tree->filhos.end());
 }
 #endif
