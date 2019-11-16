@@ -22,6 +22,7 @@ struct Node {
 	{}
 };
 
+// Declarando funcoes
 bool search(Node* tree, int key);
 void insert(Node* raiz, int k);
 void insert_naocheia(Node* node, int k);
@@ -34,6 +35,9 @@ int get_sucessor(Node *tree, int idx);
 void concatenacao(Node* tree, int index_pag);
 void redistribuicao(Node* tree, int index_pag);
 
+/**
+ * Funcao busca um valor na arvore
+ */ 
 bool search(Node* tree, int key){
 	if(tree == nullptr)
 		return false;
@@ -59,6 +63,9 @@ bool search(Node* tree, int key){
 	return search(tree->filhos[i], key); 
 }
 
+/**
+ * Funcao insere um valor na arvore
+ */
 void insert(Node* raiz, int k) { 
     if(raiz == nullptr) { 
         raiz = new Node(raiz->order, true); 
@@ -82,7 +89,10 @@ void insert(Node* raiz, int k) {
             insert_naocheia(raiz, k); 
     } 
 } 
-  
+
+/**
+ * Funcao auxiliar para inserir um valor na arvore 
+ */
 void insert_naocheia(Node* node, int k){ 
     int i = node->data.size() - 1; 
   
@@ -107,7 +117,10 @@ void insert_naocheia(Node* node, int k){
         insert_naocheia(node->filhos[i+1], k); 
     } 
 } 
-  
+
+/**
+ * Funcao que realiza a cisao de paginas na arvore
+ */
 void cisao(Node* s, int i, Node *y){ 
     Node *z = new Node(y->order, y->folha); 
     for(int j = 0; j < y->order-1; j++) {
@@ -134,6 +147,9 @@ void cisao(Node* s, int i, Node *y){
 		s->data[i] = y->data[s->order-1]; 
 } 
 
+/**
+ * Funcao auxiliar que ordena os valores na arvore
+ */
 void ordenar(vector<int> vector){
 	for(int i = 0; i<vector.size(); ++i)
 		for (int j = 0; j <vector.size() - i - 1; j++){
@@ -143,6 +159,9 @@ void ordenar(vector<int> vector){
 		}	
 }
 
+/**
+ * Funcao remove um valor na arvore
+ */
 void remove(Node* tree, int key){
 	int idx = encontrar_chave(tree, key); 
 
@@ -193,6 +212,9 @@ void remove(Node* tree, int key){
 	*/
 }
 
+/**
+ * Funcao auxiliar que encontra o indice de um valor na arvore
+ */
 int encontrar_chave(Node *node, int key) {  
     int idx=0; 
     
@@ -202,6 +224,9 @@ int encontrar_chave(Node *node, int key) {
     return idx; 
 } 
 
+/**
+ * Funcao auxiliar que retorna o predecessor um valor na arvore
+ */
 int get_predecessor(Node *tree, int idx) {
     Node *cur = tree->filhos[idx]; 
 
@@ -210,7 +235,10 @@ int get_predecessor(Node *tree, int idx) {
   
     return cur->data[cur->order-1]; 
 } 
-  
+
+/**
+ * Funcao auxiliar que retorna o sucessor um valor na arvore
+ */
 int get_sucessor(Node *tree, int idx) {
     Node *cur = tree->filhos[idx+1]; 
     
@@ -221,6 +249,9 @@ int get_sucessor(Node *tree, int idx) {
     return cur->data[0]; 
 } 
 
+/**
+ * Funcao auxiliar que realiza a concatenacao de paginas na arvore
+ */
 void concatenacao(Node* tree, int index_pag){	// eh propagavel
 	Node* pag_filha = tree->filhos[index_pag];
 	Node* pag_vizinha = tree->filhos[index_pag+1];
@@ -246,6 +277,9 @@ void concatenacao(Node* tree, int index_pag){	// eh propagavel
 	delete(pag_vizinha);
 }
 
+/**
+ * Funcao auxiliar que realiza a redistribuicao de valores nas paginas de uma arvore
+ */
 void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
 	Node* pag_filha = tree->filhos[index_pag];
 	Node* pag_vizinha = tree->filhos[index_pag+1];
@@ -271,6 +305,9 @@ void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
 	cisao(pag_filha, 0, pag_vizinha);
 }
 
+/**
+ * Funcao auxiliar que pinta a arvore
+ */
 void print(Node* tree){
 	if(tree != nullptr){
 		for(int i = 0; i < tree->order; i++){ 
