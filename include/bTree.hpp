@@ -171,8 +171,8 @@ void cisao(Node* pagina_pai, int i, Node* pagina){ 		// a variavel i guarda o i 
     for(int j = pagina_pai->data.size(); j >= i+1; j--) 
         pagina_pai->filhos[j+1] = pagina_pai->filhos[j]; 
   
-	// Coloco na pagina pai o novo filho
-    pagina_pai->filhos[i+1] = new_pagina; 
+
+    pagina_pai->filhos.insert(pagina_pai->filhos.begin() + i + 1, pagina);
   
 	// Procuro onde colocar a nova chave, "empurrando" todos os valores maiores do que ela para frente
     for(int j = pagina_pai->data.size()-1; j >= i; j--) 
@@ -181,8 +181,7 @@ void cisao(Node* pagina_pai, int i, Node* pagina){ 		// a variavel i guarda o i 
 	if(pagina_pai->data.empty())
 		pagina_pai->data.push_back(pagina->data[pagina_pai->order-1]);
 	else 
-		// Copio a chave mediana para a pagina pai
-		pagina_pai->data[i] = pagina->data[pagina_pai->order-1]; 
+		pagina_pai->data.insert(pagina_pai->data.begin() + i , pagina->data[pagina_pai->order-1]);
 } 
 
 ////////////////////////////////////////////// REMOVE //////////////////////////////////////////////
@@ -349,31 +348,14 @@ void ordenar(vector<int> vector){
  * Funcao auxiliar que pinta a arvore
  */
 void print(Node* tree){
-	if(tree != nullptr){
-		for(int i = 0; i < tree->order*2; i++){ 
-			// Caso a pagina seja uma folha, imprimo suas chaves guardadas
-			if(tree->folha) 
-				cout << " " << tree->data[i];
-			else	
-				// Caso n seja, desço para imprimir os filhos
-				print(tree->filhos[i]); 
-    	}
+	if (tree == nullptr) return;
+	for (int i = 0; i < tree->data.size(); ++i){
+		printf("oi \n");
+		if (!tree->filhos.empty())
+			print(tree->filhos[i]);
+		cout << tree->data[i] << " ";
 	}
-	return;
-
-	// stack<Node*> stack;
-    // stack.push(tree);
-    // while (!stack.empty()){
-    //     Node* raiz = stack.top();
-    //     stack.pop();
-    //     int i;
-    //     for(i = 0; i < tree->order*2; i++){
-    //         if(tree->folha == false)
-    //             stack.push(raiz->filhos[i]); 
-    //         cout << " " << raiz->data[i];
-    //     }
-    //     if (tree->folha == false)
-    //         stack.push(raiz->filhos[i]);
-    // }
+	if (!tree->filhos.empty())
+		print(*tree->filhos.end());
 }
 #endif
