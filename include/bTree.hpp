@@ -8,6 +8,8 @@
 
 #include <iostream> 
 #include <vector>
+#include <stack>
+#include <queue>
 
 using namespace std;
 
@@ -17,6 +19,7 @@ struct Node {
 	std::vector<Node*> filhos;		// Ponteiros de cada nós
 	int order;						// Ordem da pag
 	bool folha;						// Bool para saber se a pagina eh folha
+	int nivel;
 	// Construtor do node
 	Node(int _order, bool _folha) : order{_order}, folha{_folha}
 	{}
@@ -59,20 +62,23 @@ bool search(Node* tree, int key){
 			return false;
 		}	
 	} 
-    
 	return search(tree->filhos[i], key); 
 }
 
 /**
  * Funcao insere um valor na arvore
  */
-void insert(Node* raiz, int k) { 
+void insert(Node* raiz, int key) { 
+	if(search(raiz, key)){
+		cout << "erro-insert: O elemento já está na árvore!\n" << endl;
+		return;
+	}
+
     if(raiz == nullptr) { 
         raiz = new Node(raiz->order, true); 
-        raiz->data.push_back(k);  
+        raiz->data.push_back(key);  
 		raiz->folha = true;
-    } 
-    else { 
+    } else { 
         if(raiz->data.size() == 2*raiz->order-1){ 
             Node *node = new Node(raiz->order, false); 
   
@@ -80,13 +86,13 @@ void insert(Node* raiz, int k) {
             cisao(node, 0, raiz); 
   
             int i = 0; 
-            if(node->data[0] < k) 
+            if(node->data[0] < key) 
                 i++; 
           
-		    insert_naocheia(node->filhos[i],k); 
+		    insert_naocheia(node->filhos[i], key); 
             raiz = node; 
         } else 
-            insert_naocheia(raiz, k); 
+            insert_naocheia(raiz, key); 
     } 
 } 
 
@@ -189,7 +195,7 @@ void remove(Node* tree, int key){
 		}
     } else { 
         if(tree->folha) { 
-            cout << "Chave não encontrada na arvore! \n"; 
+            cout << "erro-remove: Chave não encontrada na arvore! \n"; 
             return; 
         } 
 
@@ -309,12 +315,29 @@ void redistribuicao(Node* tree, int index_pag){		// nao eh propagavel
  * Funcao auxiliar que pinta a arvore
  */
 void print(Node* tree){
-	if(tree != nullptr){
-		for(int i = 0; i < tree->order; i++){ 
-			if(tree->folha == false) 
-				print(tree->filhos[i]); 
-			cout << " " << tree->data[i]; 
-    	}
-	}
+	// if(tree != nullptr){
+	// 	for(int i = 0; i < tree->order*2; i++){ 
+	// 		if(tree->folha) 
+	// 			cout << " " << tree->data[i];
+	// 		else	
+	// 			print(tree->filhos[i]); 
+    // 	}
+	// }
+	// return;
+
+	// stack<Node*> stack;
+    // stack.push(tree);
+    // while (!stack.empty()){
+    //     Node* raiz = stack.top();
+    //     stack.pop();
+    //     int i;
+    //     for(i = 0; i < tree->order*2; i++){
+    //         if(tree->folha == false)
+    //             stack.push(raiz->filhos[i]); 
+    //         cout << " " << raiz->data[i];
+    //     }
+    //     if (tree->folha == false)
+    //         stack.push(raiz->filhos[i]);
+    // }
 }
 #endif

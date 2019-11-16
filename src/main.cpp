@@ -51,7 +51,7 @@ int main(){
 			case BUSCA:
 				ler >> parametro;
                 cout << ">> Buscando elemento " << parametro << ": ";
-				search(arvore, parametro) ? cout << "O elemento está na árvore\n": cout<<"O não elemento está na árvore\n";
+				search(arvore, parametro) ? cout << "O elemento está na árvore\n": cout<<"O elemento NÃO está na árvore\n";
 				break;
 			case INSIRA:
 				ler >> parametro;
