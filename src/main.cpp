@@ -30,7 +30,7 @@ int main(){
     // int ordem;
     // cin >> ordem;
 
-    bTree arvore(3);
+    BTree arvore = BTree(2);
 
     string comando_linha; // Para salvar o comando da linha do arquivo
 
@@ -53,23 +53,25 @@ int main(){
 			case BUSCA:
 				ler >> parametro;
                 cout << ">> Buscando elemento " << parametro << ": ";
-				arvore.search(parametro) ? cout << "O elemento está na árvore\n": cout<<"O elemento NÃO está na árvore\n";
+                arvore.search(parametro) ? cout << "O elemento está na árvore\n": cout<<"O elemento NÃO está na árvore\n";
 				break;
 			case INSIRA:
 				ler >> parametro;
 				cout << ">> Inserindo elemento " << parametro << endl;
-				arvore.insert(parametro);
+                arvore.insert(parametro);
 				break;
-			//case REMOVA:
-			//	ler >> parametro;
-				//cout << ">> Removendo elemento " << parametro << endl;
-				//arvore.remove(parametro);
-			//	break;
+			/*case REMOVA:
+				ler >> parametro;
+				cout << ">> Removendo elemento " << parametro << endl;
+				remove(arvore, parametro);
+				break;*/
 			default:
 				cout << "" << endl;
 				cout << ">> Comando não encontrado! " << endl;
 				break;
         }
+        cout << ">>EXIBINDO A ARVORE!!\n";
+        arvore.print();
     }
 
     arquivo.close();
