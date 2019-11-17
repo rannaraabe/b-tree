@@ -70,8 +70,6 @@ int main(){
 				cout << ">> Comando não encontrado! " << endl;
 				break;
         }
-        cout << ">>EXIBINDO A ARVORE!!\n";
-        arvore.print();
     }
 
     arquivo.close();
